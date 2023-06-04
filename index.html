@@ -57,6 +57,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
 
+        window.addEventListener("DOMContentLoaded",()=>{
+            axios.get("https://crudcrud.com/api/42c526223e5844d5a5409f71bb1872cc/apointmentData")
+                .then((resp)=>{
+                    for(var  i=0;i<resp.data.length;i++){
+                        console.log(resp.data[i]);
+                    }
+                })
+                .catch((err)=>console.log(err))
+        })
+
         function onclicking(event){
             event.preventDefault();
             let myObj={
