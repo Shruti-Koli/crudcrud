@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+<style>
+    body {
+        background-image:url("bg.jpg");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: 100% 100%;
+        display: grid;
+        justify-content: center;
+        place-items:center;
+    }
+    form {
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border: 2px solid black;
+        text-align: center;
+        /* display: flex;
+        justify-content: center; */
+        width: 700px;
+    }
+    input{
+        width: 500px;
+        text-align: center;
+        margin: 7px;
+        height:25px;
+    }
+    label{
+        text-align: left;
+        float: left;
+        margin-left: 100px;
+    }
+</style>
+
+</head>
+<body>
+    <h1>Book A Call</h1>
+    <p style="font-size: large;">Book a call and our representative will call you</p>
+    <hr>
+    <form action="#" onsubmit="onclicking(event)" autocomplete="on">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="uname" required><br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="uemail" required><br>
+        <label for="num">Phone:</label><br>
+        <input type="tel" name="unum" id="num" required><br>
+        <label for="calltime">Time for Call:</label><br>
+        <input type="datetime-local" id="calltime" name="ucalltime" required ><br><br>
+        <input type="submit" value="GET A CALL" style="box-shadow: 0px 0px 2px black;font-weight:bold;"><br>
+    </form>
+    <div id="disp"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script>
+
+        function onclicking(event){
+            event.preventDefault();
+            let myObj={
+                name:event.target.uname.value,
+                mail:event.target.uemail.value,
+                number:event.target.unum.value,
+                time:event.target.ucalltime.value
+            };
+            // if(localStorage.getItem(myObj.mail)!=null){
+            //     alert("edit existing item");
+            // }
+            
+            let myObj_str = JSON.stringify(myObj);
+            let key=event.target.uemail.value;
+            localStorage.setItem(key,myObj_str); 
+            
+            axios.post("https://crudcrud.com/api/42c526223e5844d5a5409f71bb1872cc/apointmentData",myObj)
+            .then((res)=>{console.log(res.data)})
+            .catch((err)=>{console.log(err)});
+
+            let data= document.createTextNode('name: '+myObj.name+',mail: '+myObj.mail+',number: '+myObj.number+',time: '+myObj.time);
+            var toDisp= document.getElementById("disp");
+            toDisp.appendChild(data);
+
+            let delbutn = document.createElement("button");
+            delbutn.className="delbtn";
+            delbutn.style.width="100px";
+            var clickarea = document.getElementById("disp");
+            delbutn.onclick=()=>{
+                if(confirm("are you sure?")){
+                    var delnode= delbutn.previousSibling;
+                    let editbutn=  delbutn.nextSibling;
+                    clickarea.removeChild(delnode);
+                    clickarea.removeChild(delbutn);
+                    localStorage.removeItem(myObj.mail);
+                    clickarea1.removeChild(editbutn);
+                }
+            }
+            delbutn.appendChild(document.createTextNode("Delete"));
+            toDisp.appendChild(delbutn);
+
+            let editbutn = document.createElement("button");
+            editbutn.className="editbtn";
+            editbutn.style.width="100px";
+            var clickarea1 = document.getElementById("disp");
+            editbutn.onclick=()=>{
+                    var delnode= editbutn.previousSibling.previousSibling;
+                    var editnode= editbutn.previousSibling;
+                    document.getElementById("name").value=myObj.name;
+                    document.getElementById("email").value=myObj.mail;
+                    document.getElementById("num").value=myObj.number;
+                    document.getElementById("calltime").value=myObj.time;
+
+                    clickarea1.removeChild(editnode);
+                    clickarea1.removeChild(editbutn);
+                    clickarea1.removeChild(delnode);
+                    //clickarea.removeChild(delbutn);
+                    //localStorage.removeItem(myObj.mail);
+            
+            editbutn.appendChild(document.createTextNode("Edit"));
+            toDisp.appendChild(editbutn);
+
+
+            var brk= document.createElement("br");
+            toDisp.appendChild(brk);
+            }   
+            event.target.uname.value="";
+            event.target.uemail.value="";
+            event.target.unum.value="";
+            event.target.ucalltime.value="";
+        }
+
+    </script>
+</body>
+</html>
