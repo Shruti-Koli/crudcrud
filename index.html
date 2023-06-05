@@ -38,6 +38,9 @@
 </style>
 
 </head>
+
+
+
 <body>
     <h1>Book A Call</h1>
     <p style="font-size: large;">Book a call and our representative will call you</p>
@@ -53,20 +56,40 @@
         <input type="datetime-local" id="calltime" name="ucalltime" required ><br><br>
         <input type="submit" value="GET A CALL" style="box-shadow: 0px 0px 2px black;font-weight:bold;"><br>
     </form>
-    <div id="disp"></div>
+    <ul id="listofitems"></ul>
+
+
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
-
+        //Display Existing
         window.addEventListener("DOMContentLoaded",()=>{
-            axios.get("https://crudcrud.com/api/42c526223e5844d5a5409f71bb1872cc/apointmentData")
+            axios.get("https://crudcrud.com/api/4e1c07701784400e83dc19ff87b0efc3/apointmentData")
                 .then((resp)=>{
                     for(var  i=0;i<resp.data.length;i++){
-                        console.log(resp.data[i]);
+                        showUserOnScreen(resp.data[i]);
                     }
                 })
-                .catch((err)=>console.log(err))
+                .catch((err)=>{
+                    //if it error occured
+                    document.body.innerHTML= document.body.innerHTML+"<h4>Something Went Wrong</h4>"
+                    console.log(err)
+                })
         })
 
+        //function to show user on screen
+        function showUserOnScreen(user)
+        {
+            let parentNode=document.getElementById('listofitems');
+            const childNode=`<li id=${user._id}>Name: ${user.name} - mail: ${user.mail} - Ph no.: ${user.number}
+                    <button onclick=deleteUser('${user._id}')>Delete User</button>
+                    <button onclick=editUserDetail('${user.mail}','${user.name}','${user.number}','${user._id}')>Edit User</button>
+                    </li>`
+            parentNode.innerHTML=parentNode.innerHTML + childNode; 
+        }
+
+        //submit function
         function onclicking(event){
             event.preventDefault();
             let myObj={
@@ -75,69 +98,52 @@
                 number:event.target.unum.value,
                 time:event.target.ucalltime.value
             };
-            // if(localStorage.getItem(myObj.mail)!=null){
-            //     alert("edit existing item");
-            // }
+
             
-            let myObj_str = JSON.stringify(myObj);
-            let key=event.target.uemail.value;
-            localStorage.setItem(key,myObj_str); 
-            
-            axios.post("https://crudcrud.com/api/42c526223e5844d5a5409f71bb1872cc/apointmentData",myObj)
-            .then((res)=>{console.log(res.data)})
-            .catch((err)=>{console.log(err)});
+            axios.post("https://crudcrud.com/api/4e1c07701784400e83dc19ff87b0efc3/apointmentData",myObj)
+            .then((res)=>{
+                showUserOnScreen(res.data);
+                console.log(res.data)})
+            .catch((err)=>{
+                document.body.innerHTML= document.body.innerHTML+"<h4>Something Went Wrong</h4>"
+                console.log(err)});
 
-            let data= document.createTextNode('name: '+myObj.name+',mail: '+myObj.mail+',number: '+myObj.number+',time: '+myObj.time);
-            var toDisp= document.getElementById("disp");
-            toDisp.appendChild(data);
-
-            let delbutn = document.createElement("button");
-            delbutn.className="delbtn";
-            delbutn.style.width="100px";
-            var clickarea = document.getElementById("disp");
-            delbutn.onclick=()=>{
-                if(confirm("are you sure?")){
-                    var delnode= delbutn.previousSibling;
-                    let editbutn=  delbutn.nextSibling;
-                    clickarea.removeChild(delnode);
-                    clickarea.removeChild(delbutn);
-                    localStorage.removeItem(myObj.mail);
-                    clickarea1.removeChild(editbutn);
-                }
-            }
-            delbutn.appendChild(document.createTextNode("Delete"));
-            toDisp.appendChild(delbutn);
-
-            let editbutn = document.createElement("button");
-            editbutn.className="editbtn";
-            editbutn.style.width="100px";
-            var clickarea1 = document.getElementById("disp");
-            editbutn.onclick=()=>{
-                    var delnode= editbutn.previousSibling.previousSibling;
-                    var editnode= editbutn.previousSibling;
-                    document.getElementById("name").value=myObj.name;
-                    document.getElementById("email").value=myObj.mail;
-                    document.getElementById("num").value=myObj.number;
-                    document.getElementById("calltime").value=myObj.time;
-
-                    clickarea1.removeChild(editnode);
-                    clickarea1.removeChild(editbutn);
-                    clickarea1.removeChild(delnode);
-                    //clickarea.removeChild(delbutn);
-                    //localStorage.removeItem(myObj.mail);
-            
-            editbutn.appendChild(document.createTextNode("Edit"));
-            toDisp.appendChild(editbutn);
+        }    
 
 
-            var brk= document.createElement("br");
-            toDisp.appendChild(brk);
-            }   
-            event.target.uname.value="";
-            event.target.uemail.value="";
-            event.target.unum.value="";
-            event.target.ucalltime.value="";
+        //function to edit user
+        function editUserDetail(emailid,name,phonenumber,userId){
+            document.getElementById('name').value=name; 
+            document.getElementById('email').value=emailid;
+            document.getElementById('num').value=phonenumber;
+            deleteUser(userId);
         }
+
+
+
+        //function to delete user
+        function deleteUser(userId){
+            axios.delete(`https://crudcrud.com/api/4e1c07701784400e83dc19ff87b0efc3/apointmentData/${userId}`)
+               .then((response)=>{
+                    removeUserfromScreen(userId)
+                }).catch((err)=>{
+                    document.body.innerHTML= document.body.innerHTML+"<h4>Something Went Wrong</h4>"
+                    console.log(err)
+                    })
+            }
+
+        //function to remove user from Screen
+        function removeUserfromScreen(userId){
+            let parent=document.getElementById('listofitems');
+            const childNodeDeleted=document.getElementById(userId);
+            parent.removeChild(childNodeDeleted)
+        }
+
+
+        // event.target.uname.value="";
+        // event.target.uemail.value="";
+        // event.target.unum.value="";
+        // event.target.ucalltime.value="";
 
     </script>
 </body>
