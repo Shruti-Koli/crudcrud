@@ -65,7 +65,7 @@
     <script>
         //Display Existing
         window.addEventListener("DOMContentLoaded",()=>{
-            axios.get("https://crudcrud.com/api/4e1c07701784400e83dc19ff87b0efc3/apointmentData")
+            axios.get("https://crudcrud.com/api/80eb3c4824894ec2adc44582a7923230/apointmentData")
                 .then((resp)=>{
                     for(var  i=0;i<resp.data.length;i++){
                         showUserOnScreen(resp.data[i]);
@@ -84,7 +84,7 @@
             let parentNode=document.getElementById('listofitems');
             const childNode=`<li id=${user._id}>Name: ${user.name} - mail: ${user.mail} - Ph no.: ${user.number}
                     <button onclick=deleteUser('${user._id}')>Delete User</button>
-                    <button onclick=editUserDetail('${user.mail}','${user.name}','${user.number}','${user._id}')>Edit User</button>
+                    <button onclick=editUserDetail('${user.mail}',"${user.name}",'${user.number}','${user._id}')>Edit User</button>
                     </li>`
             parentNode.innerHTML=parentNode.innerHTML + childNode; 
         }
@@ -99,8 +99,11 @@
                 time:event.target.ucalltime.value
             };
 
+            event.target.uname.value="";
+            event.target.uemail.value="";
+            event.target.unum.value="";
             
-            axios.post("https://crudcrud.com/api/4e1c07701784400e83dc19ff87b0efc3/apointmentData",myObj)
+            axios.post("https://crudcrud.com/api/80eb3c4824894ec2adc44582a7923230/apointmentData",myObj)
             .then((res)=>{
                 showUserOnScreen(res.data);
                 console.log(res.data)})
@@ -123,7 +126,7 @@
 
         //function to delete user
         function deleteUser(userId){
-            axios.delete(`https://crudcrud.com/api/4e1c07701784400e83dc19ff87b0efc3/apointmentData/${userId}`)
+            axios.delete(`https://crudcrud.com/api/80eb3c4824894ec2adc44582a7923230/apointmentData/${userId}`)
                .then((response)=>{
                     removeUserfromScreen(userId)
                 }).catch((err)=>{
@@ -139,11 +142,6 @@
             parent.removeChild(childNodeDeleted)
         }
 
-
-        // event.target.uname.value="";
-        // event.target.uemail.value="";
-        // event.target.unum.value="";
-        // event.target.ucalltime.value="";
 
     </script>
 </body>
